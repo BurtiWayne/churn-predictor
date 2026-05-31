@@ -17,8 +17,6 @@ st.set_page_config(
 # ── Load model & encoders ─────────────────────────────────
 @st.cache_resource
 def load_artifacts():
-    @st.cache_resource
-def load_artifacts():
     import os
     if not os.path.exists("model.pkl"):
         import pandas as pd
