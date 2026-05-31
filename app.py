@@ -17,6 +17,29 @@ st.set_page_config(
 # ── Load model & encoders ─────────────────────────────────
 @st.cache_resource
 def load_artifacts():
+    @st.cache_resource
+def load_artifacts():
+    import os
+    if not os.path.exists("model.pkl"):
+        import pandas as pd
+        from sklearn.model_selection import train_test_split
+        from sklearn.ensemble import RandomForestClassifier
+        from sklearn.preprocessing import LabelEncoder
+        df = pd.read_csv("churn_data.csv").drop(columns=["customerID"])
+        text_cols = [c for c in df.columns if str(df[c].dtype) in ("object","str","string")]
+        les = {}
+        for col in text_cols:
+            le = LabelEncoder()
+            df[col] = le.fit_transform(df[col].astype(str))
+            les[col] = le
+        df = df.apply(pd.to_numeric, errors="coerce").fillna(0)
+        X = df.drop(columns=["Churn"]).astype(float)
+        y = df["Churn"].astype(int)
+        X_train, _, y_train, _ = train_test_split(X, y, test_size=0.2, random_state=42)
+        clf = RandomForestClassifier(n_estimators=200, max_depth=10, random_state=42, class_weight="balanced")
+        clf.fit(X_train, y_train)
+        with open("model.pkl","wb") as f: pickle.dump(clf, f)
+        with open("encoders.pkl","wb") as f: pickle.dump(les, f)
     with open("model.pkl", "rb") as f:
         model = pickle.load(f)
     with open("encoders.pkl", "rb") as f:
