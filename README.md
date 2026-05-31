@@ -23,3 +23,5 @@ Scikit-learn — model training
 Pandas — data processing
 Streamlit — web app & deployment
 GitHub — version control
+
+Live app : https://churn-predictor-bs.streamlit.app/
